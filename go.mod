@@ -106,6 +106,8 @@ require (
 	github.com/mdempsky/unconvert v0.0.0-20190325185700-2f5dc3378ed3
 	github.com/mgechev/revive v0.0.0-20190831212952-fa5acbc1f032
 	github.com/mitchellh/mapstructure v1.1.2
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
+	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826
 	github.com/muesli/smartcrop v0.3.0 // indirect
 	github.com/nats-io/nats-server/v2 v2.0.4
