@@ -18,7 +18,7 @@ import MapWidget from '../../../components/map/widget/'
 
 export default class DeviceMap extends React.Component {
   render() {
-    const { device, ids } = this.props
+    const { device } = this.props
 
     const markers =
       device.locations && device.locations.user
@@ -36,16 +36,29 @@ export default class DeviceMap extends React.Component {
       <MapWidget
         id="device-map-widget"
         markers={markers}
-        path={`/applications/${ids.app}/devices/${ids.device}/location`}
+        path={`/applications/${device.ids.device_id}/devices/${device.ids.application_ids.application_id}/location`}
       />
     )
   }
 }
 
 DeviceMap.propTypes = {
-  ids: PropTypes.shape({
-    app: PropTypes.string.isRequired,
-    device: PropTypes.string.isRequired,
+  device: PropTypes.shape({
+    locations: PropTypes.shape({
+      user: PropTypes.shape({
+        latitude: PropTypes.number,
+        longitude: PropTypes.number,
+      }),
+    }),
+    ids: PropTypes.shape({
+      device_id: PropTypes.string,
+      application_ids: PropTypes.shape({
+        application_id: PropTypes.string,
+      }),
+    }),
   }),
-  device: PropTypes.object.isRequired,
+}
+
+DeviceMap.defaultProps = {
+  device: {},
 }
