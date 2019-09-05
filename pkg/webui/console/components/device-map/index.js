@@ -43,13 +43,17 @@ export default class DeviceMap extends React.Component {
 }
 
 DeviceMap.propTypes = {
+  // Device is an object.
   device: PropTypes.shape({
+    // Locations is an object that has three states not there, there and empty, depending on the situation.
     locations: PropTypes.shape({
+      // User is an object containing latitude and longitude property of number.
       user: PropTypes.shape({
         latitude: PropTypes.number,
         longitude: PropTypes.number,
       }),
     }),
+    // Ids is an object containing device_id (as a string) and application_ids ( an object containing one property that is a string )
     ids: PropTypes.shape({
       device_id: PropTypes.string,
       application_ids: PropTypes.shape({
