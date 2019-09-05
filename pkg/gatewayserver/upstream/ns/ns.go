@@ -76,11 +76,11 @@ func (h *Handler) ConnectGateway(ctx context.Context, _ string, gtwConn *io.Conn
 
 // HandleUp implements upstream.Handler.
 func (h *Handler) HandleUp(ctx context.Context, gatewayUID string, ids ttnpb.EndDeviceIdentifiers, msg *ttnpb.GatewayUp) error {
-	ns := h.c.GetPeerConn(ctx, ttnpb.PeerInfo_NETWORK_SERVER, ids)
-	if ns == nil {
-		return errNotFound.WithAttributes("ids", ids)
+	nsConn, err := h.c.GetPeerConn(ctx, ttnpb.ClusterRole_NETWORK_SERVER, ids)
+	if err == nil {
+		return errNotFound.WithCause(err).WithAttributes("ids", ids)
 	}
-	client := ttnpb.NewGsNsClient(ns.Conn())
+	client := ttnpb.NewGsNsClient(nsConn)
 	for _, up := range msg.UplinkMessages {
 		_, err := client.HandleUplink(ctx, up, h.c.WithClusterAuth())
 		if err != nil {
