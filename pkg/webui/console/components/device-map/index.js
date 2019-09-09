@@ -19,6 +19,8 @@ import MapWidget from '../../../components/map/widget/'
 export default class DeviceMap extends React.Component {
   render() {
     const { device } = this.props
+    const { device_id } = device.ids
+    const { application_id } = device.ids.application_ids
 
     const markers =
       device.locations && device.locations.user
@@ -36,7 +38,7 @@ export default class DeviceMap extends React.Component {
       <MapWidget
         id="device-map-widget"
         markers={markers}
-        path={`/applications/${device.ids.device_id}/devices/${device.ids.application_ids.application_id}/location`}
+        path={`/applications/${device_id}/devices/${application_id}/location`}
       />
     )
   }
