@@ -21,7 +21,7 @@ export default class GatewayMap extends React.Component {
     const { gateway } = this.props
 
     const markers =
-      gateway.antennas && gateway.antennas[0].location
+      gateway.antennas && gateway.antennas.length > 0 && gateway.antennas[0].location
         ? gateway.antennas.map(location => ({
             position: {
               latitude: location.location.latitude || 0,
