@@ -38,6 +38,7 @@ export default class Map extends React.Component {
   getMapCenter(markers) {
     // This will calculate zoom and map center long/lang based on all markers provided.
     // Currently it just returns the first marker.
+    // TODO: action (https://github.com/TheThingsNetwork/lorawan-stack/issues/1241)
     return markers[0]
   }
 
