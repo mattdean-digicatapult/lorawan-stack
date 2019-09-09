@@ -89,7 +89,7 @@ export default class Map extends React.Component {
 Map.propTypes = {
   // Id is a string used to give the map a unquie ID.
   id: PropTypes.string.isRequired,
-  // LeafletConfig is an object which can conatin any number of properties defined by the leaflet plugin and is used to overwrite the default configuration of leaflet.
+  // LeafletConfig is an object which can contain any number of properties defined by the leaflet plugin and is used to overwrite the default configuration of leaflet.
   leafletConfig: PropTypes.shape({}),
   // Markers is an array of objects containing a specific properties
   markers: PropTypes.arrayOf(
