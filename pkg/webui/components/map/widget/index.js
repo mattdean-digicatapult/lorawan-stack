@@ -61,7 +61,7 @@ export default class MapWidget extends React.Component {
 }
 
 MapWidget.propTypes = {
-  // Id is a string used to give the map a unquie ID.
+  // Id is a string used to give the map a unique ID.
   id: PropTypes.string.isRequired,
   // Markers is an array of objects containing a specific properties
   markers: PropTypes.arrayOf(

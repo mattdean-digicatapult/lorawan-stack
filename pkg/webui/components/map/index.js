@@ -87,7 +87,7 @@ export default class Map extends React.Component {
 }
 
 Map.propTypes = {
-  // Id is a string used to give the map a unquie ID.
+  // Id is a string used to give the map a unique ID.
   id: PropTypes.string.isRequired,
   // LeafletConfig is an object which can contain any number of properties defined by the leaflet plugin and is used to overwrite the default configuration of leaflet.
   leafletConfig: PropTypes.shape({}),
@@ -98,7 +98,7 @@ Map.propTypes = {
       position: PropTypes.objectOf(PropTypes.number),
     }),
   ).isRequired,
-  // Widget is a boolen used to add a class name to the map container div for styling.
+  // Widget is a boolean used to add a class name to the map container div for styling.
   widget: PropTypes.bool,
 }
 
