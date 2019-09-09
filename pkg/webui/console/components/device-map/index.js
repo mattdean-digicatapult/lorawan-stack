@@ -57,11 +57,11 @@ DeviceMap.propTypes = {
     }),
     // Ids is an object containing device_id (as a string) and application_ids ( an object containing one property that is a string )
     ids: PropTypes.shape({
-      device_id: PropTypes.string,
+      device_id: PropTypes.string.isRequired,
       application_ids: PropTypes.shape({
-        application_id: PropTypes.string,
+        application_id: PropTypes.string.isRequired,
       }),
-    }),
+    }).isRequired,
   }),
 }
 
