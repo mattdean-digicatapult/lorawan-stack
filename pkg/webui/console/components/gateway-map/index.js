@@ -19,6 +19,7 @@ import MapWidget from '../../../components/map/widget/'
 export default class GatewayMap extends React.Component {
   render() {
     const { gateway } = this.props
+    const { gateway_id } = gateway.ids
 
     const markers =
       gateway.antennas && gateway.antennas.length > 0 && gateway.antennas[0].location
@@ -34,7 +35,7 @@ export default class GatewayMap extends React.Component {
       <MapWidget
         id="gateway-map-widget"
         markers={markers}
-        path={`/gateways/${gateway.ids.gateway_id}/location`}
+        path={`/gateways/${gateway_id}/location`}
       />
     )
   }
