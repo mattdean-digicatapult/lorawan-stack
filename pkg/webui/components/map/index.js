@@ -98,7 +98,7 @@ Map.propTypes = {
       position: PropTypes.objectOf(PropTypes.number),
     }),
   ).isRequired,
-  // Widget is a boolen used to add a class name to the map conatiner div for styling.
+  // Widget is a boolen used to add a class name to the map container div for styling.
   widget: PropTypes.bool,
 }
 
