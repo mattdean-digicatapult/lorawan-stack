@@ -34,6 +34,15 @@ func init() {
 			ttnpb.RIGHT_ORGANIZATION_SETTINGS_MEMBERS,
 		}
 	}
+
+	orgAccessCollaboratorUser.Admin = false
+	orgAccessCollaboratorUser.State = ttnpb.STATE_APPROVED
+	for _, apiKey := range userAPIKeys(&orgAccessCollaboratorUser.UserIdentifiers).APIKeys {
+		apiKey.Rights = []ttnpb.Right{
+			ttnpb.RIGHT_ORGANIZATION_SETTINGS_API_KEYS,
+			ttnpb.RIGHT_ORGANIZATION_SETTINGS_MEMBERS,
+		}
+	}
 }
 
 func TestOrganizationAccessNotFound(t *testing.T) {
@@ -310,5 +319,96 @@ func TestOrganizationAccessCRUD(t *testing.T) {
 
 		a.So(err, should.BeNil)
 		a.So(res.Rights, should.Resemble, []ttnpb.Right{ttnpb.RIGHT_ORGANIZATION_ALL})
+	})
+}
+
+func TestOrganizationAccessCollaboratorRightsModification(t *testing.T) {
+	a := assertions.New(t)
+	ctx := test.Context()
+
+	testWithIdentityServer(t, func(is *IdentityServer, cc *grpc.ClientConn) {
+		userID, usrCreds := defaultUser.UserIdentifiers, userCreds(defaultUserIdx)
+		organizationID := userOrganizations(&userID).Organizations[0].OrganizationIdentifiers
+		collaboratorID, collaboratorCreds := orgAccessCollaboratorUser.UserIdentifiers.OrganizationOrUserIdentifiers(),
+			userCreds(orgAccessCollaboratorUserIdx)
+
+		reg := ttnpb.NewOrganizationAccessClient(cc)
+
+		_, err := reg.SetCollaborator(ctx, &ttnpb.SetOrganizationCollaboratorRequest{
+			OrganizationIdentifiers: organizationID,
+			Collaborator: ttnpb.Collaborator{
+				OrganizationOrUserIdentifiers: *collaboratorID,
+				Rights: []ttnpb.Right{
+					ttnpb.RIGHT_ORGANIZATION_SETTINGS_API_KEYS,
+					ttnpb.RIGHT_ORGANIZATION_SETTINGS_MEMBERS,
+				},
+			},
+		}, usrCreds)
+
+		a.So(err, should.BeNil)
+
+		userIdentifiers := userID.OrganizationOrUserIdentifiers()
+		_, err = reg.SetCollaborator(ctx, &ttnpb.SetOrganizationCollaboratorRequest{
+			OrganizationIdentifiers: organizationID,
+			Collaborator: ttnpb.Collaborator{
+				OrganizationOrUserIdentifiers: *userIdentifiers,
+				Rights: []ttnpb.Right{
+					ttnpb.RIGHT_ORGANIZATION_SETTINGS_API_KEYS,
+					ttnpb.RIGHT_ORGANIZATION_SETTINGS_MEMBERS,
+				},
+			},
+		}, collaboratorCreds)
+
+		a.So(err, should.NotBeNil)
+		a.So(errors.IsPermissionDenied(err), should.BeTrue)
+
+		// Remove RIGHT_ORGANIZATION_ALL from the owner by the owner
+		newRights := ttnpb.AllOrganizationRights.Sub(ttnpb.RightsFrom(ttnpb.RIGHT_ORGANIZATION_ALL))
+		_, err = reg.SetCollaborator(ctx, &ttnpb.SetOrganizationCollaboratorRequest{
+			OrganizationIdentifiers: organizationID,
+			Collaborator: ttnpb.Collaborator{
+				OrganizationOrUserIdentifiers: *userIdentifiers,
+				Rights:                        newRights.Rights,
+			},
+		}, usrCreds)
+
+		a.So(err, should.BeNil)
+
+		newRights = newRights.Sub(ttnpb.RightsFrom(ttnpb.RIGHT_ORGANIZATION_SETTINGS_API_KEYS))
+		_, err = reg.SetCollaborator(ctx, &ttnpb.SetOrganizationCollaboratorRequest{
+			OrganizationIdentifiers: organizationID,
+			Collaborator: ttnpb.Collaborator{
+				OrganizationOrUserIdentifiers: *userIdentifiers,
+				Rights:                        newRights.Rights,
+			},
+		}, collaboratorCreds)
+
+		a.So(err, should.BeNil)
+
+		res, err := reg.GetCollaborator(ctx, &ttnpb.GetOrganizationCollaboratorRequest{
+			OrganizationIdentifiers:       organizationID,
+			OrganizationOrUserIdentifiers: *userIdentifiers,
+		}, collaboratorCreds)
+
+		a.So(err, should.BeNil)
+		a.So(res.Rights, should.Resemble, newRights.Rights)
+
+		_, err = reg.SetCollaborator(ctx, &ttnpb.SetOrganizationCollaboratorRequest{
+			OrganizationIdentifiers: organizationID,
+			Collaborator: ttnpb.Collaborator{
+				OrganizationOrUserIdentifiers: *userIdentifiers,
+				Rights:                        []ttnpb.Right{},
+			},
+		}, collaboratorCreds)
+
+		a.So(err, should.BeNil)
+
+		_, err = reg.GetCollaborator(ctx, &ttnpb.GetOrganizationCollaboratorRequest{
+			OrganizationIdentifiers:       organizationID,
+			OrganizationOrUserIdentifiers: *userIdentifiers,
+		}, collaboratorCreds)
+
+		a.So(err, should.NotBeNil)
+		a.So(errors.IsNotFound(err), should.BeTrue)
 	})
 }
